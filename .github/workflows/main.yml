@@ -64,25 +64,38 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - name: Download all firmware artifacts
-      uses: actions/download-artifact@v4
-      with:
-        path: ./firmwares
-
-    - name: Create GitHub Release (draft)
-      id: create_release
-      uses: actions/create-release@v1
-      with:
-        tag_name: pre-release-${{ github.run_number }}
-        release_name: Beta v#${{ github.run_number }}
-        draft: true
-        prerelease: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Upload all firmware assets to release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: ./firmwares/*.uf2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Download all firmware artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: ./firmwares
+  
+      - name: Create GitHub Release (draft)
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: pre-release-${{ github.run_number }}
+          release_name: Beta v#${{ github.run_number }}
+          draft: true
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: Upload firmware assets to release
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for file in ./firmwares/*.uf2; do
+            filename=$(basename "$file")
+            echo "Uploading $filename ..."
+            gh_release_upload() {
+              curl \
+                -H "Authorization: token $GITHUB_TOKEN" \
+                -H "Content-Type: application/octet-stream" \
+                --data-binary @"$1" \
+                "${2}?name=$(basename $1)"
+            }
+            # Usa a URL de upload da release criada
+            upload_url="${{ steps.create_release.outputs.upload_url }}"
+            gh_release_upload "$file" "$upload_url"
+          done
