@@ -39,6 +39,13 @@ jobs:
           -DPICO_BOARD=${{ matrix.board }} \
           -DPICO_SDK_PATH=${{ github.workspace }}/pico-sdk \
           -DCMAKE_BUILD_TYPE=Release
+          ls
+          echo -----------------
+          ls release
+          echo -----------------
+          ls release/${{ matrix.adapter == 'STACKSMASHING' && 'SmBoard' || 'REON' }}
+          echo -----------------
+          ls release/${{ matrix.adapter == 'STACKSMASHING' && 'SmBoard' || 'REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}
     - name: Build firmware
       run: |
         cd build/${{ matrix.adapter == 'STACKSMASHING' && 'release/SmBoard' || 'release/REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}
@@ -47,5 +54,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: firmware-${{ matrix.adapter }}-${{ matrix.board }}
-        path: release/${{ matrix.adapter == 'STACKSMASHING' && 'SmBoard' || 'REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}/*.uf2
+        path: build/release/${{ matrix.adapter == 'STACKSMASHING' && 'SmBoard' || 'REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}/*.uf2
 
