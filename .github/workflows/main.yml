@@ -1,0 +1,51 @@
+name: Build PicoW Firmware
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        adapter: [REON, STACKSMASHING]
+        board: [pico_w, pico2_w]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y cmake gcc-arm-none-eabi build-essential libnewlib-arm-none-eabi
+
+    - name: Setup Pico SDK
+      run: |
+        git submodule update --init --recursive
+
+    - name: Create build directory
+      run: |
+        mkdir -p build/${{ matrix.adapter == 'STACKSMASHING' && 'release/SmBoard' || 'release/REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}
+        cd build/${{ matrix.adapter == 'STACKSMASHING' && 'release/SmBoard' || 'release/REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}
+
+    - name: Configure CMake
+      run: |
+        cd build/${{ matrix.adapter == 'STACKSMASHING' && 'release/SmBoard' || 'release/REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}
+        cmake ../../../.. -DADAPTER=${{ matrix.adapter }} -DPICO_BOARD=${{ matrix.board }} -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build firmware
+      run: |
+        cd build/${{ matrix.adapter == 'STACKSMASHING' && 'release/SmBoard' || 'release/REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}
+        cmake --build . --parallel
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: firmware-${{ matrix.adapter }}-${{ matrix.board }}
+        path: build/${{ matrix.adapter == 'STACKSMASHING' && 'release/SmBoard' || 'release/REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}/*.uf2
