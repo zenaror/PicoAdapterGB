@@ -42,9 +42,9 @@ jobs:
       run: |
         cd build
         cmake --build . --parallel
-    # - name: List files after build
-    #   run: |
-    #     find ./build -type f
+    - name: List files after build
+      run: |
+        find ./build -type f
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
