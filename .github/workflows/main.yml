@@ -50,6 +50,9 @@ jobs:
         ls release/${{ matrix.adapter == 'STACKSMASHING' && 'SmBoard' || 'REON' }}
         echo -----------------
         ls release/${{ matrix.adapter == 'STACKSMASHING' && 'SmBoard' || 'REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}
+    - name: List files after build
+      run: |
+        find ./build -type f
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
