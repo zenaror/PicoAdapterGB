@@ -67,4 +67,5 @@ jobs:
         asset_path: ./build/release/${{ matrix.adapter == 'STACKSMASHING' && 'SmBoard' || 'REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}/PicoAdapterGB_${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}${{ matrix.adapter == 'STACKSMASHING' && '_SmBoard' || '' }}.uf2
         asset_name: PicoAdapterGB_${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}${{ matrix.adapter == 'STACKSMASHING' && '_SmBoard' || '' }}.uf2
         asset_content_type: application/octet-stream
-
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
