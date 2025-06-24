@@ -16,59 +16,60 @@ jobs:
       firmware_path: ${{ steps.set_path.outputs.path }}
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        submodules: recursive
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-    - name: Install dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y cmake gcc-arm-none-eabi build-essential libnewlib-arm-none-eabi
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y cmake gcc-arm-none-eabi build-essential libnewlib-arm-none-eabi
 
-    - name: Clone Pico SDK (v2.1.1)
-      run: |
-        git clone --depth 1 --branch 2.1.1 https://github.com/raspberrypi/pico-sdk.git
-        cd pico-sdk
-        git submodule update --init
+      - name: Clone Pico SDK (v2.1.1)
+        run: |
+          git clone --depth 1 --branch 2.1.1 https://github.com/raspberrypi/pico-sdk.git
+          cd pico-sdk
+          git submodule update --init
 
-    - name: Create build directory
-      run: mkdir -p build
+      - name: Create build directory
+        run: mkdir -p build
 
-    - name: Configure CMake
-      run: |
-        cd build
-        cmake .. \
-          -DADAPTER=${{ matrix.adapter }} \
-          -DPICO_BOARD=${{ matrix.board }} \
-          -DPICO_SDK_PATH=${{ github.workspace }}/pico-sdk \
-          -DCMAKE_BUILD_TYPE=Release
+      - name: Configure CMake
+        run: |
+          cd build
+          cmake .. \
+            -DADAPTER=${{ matrix.adapter }} \
+            -DPICO_BOARD=${{ matrix.board }} \
+            -DPICO_SDK_PATH=${{ github.workspace }}/pico-sdk \
+            -DCMAKE_BUILD_TYPE=Release
 
-    - name: Build firmware
-      run: |
-        cd build
-        cmake --build . --parallel
+      - name: Build firmware
+        run: |
+          cd build
+          cmake --build . --parallel
 
-    - name: Set firmware path output
-      id: set_path
-      run: |
-        echo "::set-output name=path::build/release/${{ matrix.adapter == 'STACKSMASHING' && 'SmBoard' || 'REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}/PicoAdapterGB_${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}${{ matrix.adapter == 'STACKSMASHING' && '_SmBoard' || '' }}.uf2"
+      - name: Set firmware path output
+        id: set_path
+        run: |
+          echo "path=build/release/${{ matrix.adapter == 'STACKSMASHING' && 'SmBoard' || 'REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}/PicoAdapterGB_${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}${{ matrix.adapter == 'STACKSMASHING' && '_SmBoard' || '' }}.uf2" >> "$GITHUB_OUTPUT"
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: firmware-${{ matrix.adapter }}-${{ matrix.board }}
-        path: ${{ steps.set_path.outputs.path }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-${{ matrix.adapter }}-${{ matrix.board }}
+          path: ${{ steps.set_path.outputs.path }}
 
   release:
     needs: build
     runs-on: ubuntu-latest
+
     steps:
       - name: Download all firmware artifacts
         uses: actions/download-artifact@v4
         with:
           path: ./firmwares
-  
+
       - name: Create GitHub Release (draft)
         id: create_release
         uses: actions/create-release@v1
@@ -79,7 +80,7 @@ jobs:
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  
+
       - name: Upload firmware assets to release
         shell: bash
         env:
@@ -91,16 +92,18 @@ jobs:
             echo "No .uf2 files found to upload!"
             exit 1
           fi
-      
+
+          # Remove {?name,label} from upload_url
           upload_url="${{ steps.create_release.outputs.upload_url }}"
-      
+          upload_url="${upload_url%\{*}"
+
           for file in "${files[@]}"; do
             filename=$(basename "$file")
             echo "Uploading $filename ..."
             curl \
-              -H "Authorization: token $GITHUB_TOKEN" \
+              -X POST \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
               -H "Content-Type: application/octet-stream" \
               --data-binary @"$file" \
               "${upload_url}?name=${filename}"
           done
-
