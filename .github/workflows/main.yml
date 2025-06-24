@@ -12,6 +12,9 @@ jobs:
         adapter: [REON, STACKSMASHING]
         board: [pico_w, pico2_w]
 
+    outputs:
+      firmware_path: ${{ steps.set_path.outputs.path }}
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -22,14 +25,16 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y cmake gcc-arm-none-eabi build-essential libnewlib-arm-none-eabi
+
     - name: Clone Pico SDK (v2.1.1)
       run: |
         git clone --depth 1 --branch 2.1.1 https://github.com/raspberrypi/pico-sdk.git
         cd pico-sdk
         git submodule update --init
+
     - name: Create build directory
-      run: |
-        mkdir -p build
+      run: mkdir -p build
+
     - name: Configure CMake
       run: |
         cd build
@@ -38,18 +43,32 @@ jobs:
           -DPICO_BOARD=${{ matrix.board }} \
           -DPICO_SDK_PATH=${{ github.workspace }}/pico-sdk \
           -DCMAKE_BUILD_TYPE=Release
+
     - name: Build firmware
       run: |
         cd build
         cmake --build . --parallel
-    # - name: List files after build
-    #   run: |
-    #     find ./build -type f
-    - name: Upload artifacts
+
+    - name: Set firmware path output
+      id: set_path
+      run: |
+        echo "::set-output name=path::build/release/${{ matrix.adapter == 'STACKSMASHING' && 'SmBoard' || 'REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}/PicoAdapterGB_${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}${{ matrix.adapter == 'STACKSMASHING' && '_SmBoard' || '' }}.uf2"
+
+    - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: firmware-${{ matrix.adapter }}-${{ matrix.board }}
-        path: ./build/release/${{ matrix.adapter == 'STACKSMASHING' && 'SmBoard' || 'REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}/*.uf2
+        path: ${{ steps.set_path.outputs.path }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download all firmware artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: ./firmwares
+
     - name: Create GitHub Release (draft)
       id: create_release
       uses: actions/create-release@v1
@@ -60,12 +79,10 @@ jobs:
         prerelease: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Upload firmware to release
-      uses: actions/upload-release-asset@v1
+
+    - name: Upload all firmware assets to release
+      uses: softprops/action-gh-release@v1
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./build/release/${{ matrix.adapter == 'STACKSMASHING' && 'SmBoard' || 'REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}/PicoAdapterGB_${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}${{ matrix.adapter == 'STACKSMASHING' && '_SmBoard' || '' }}.uf2
-        asset_name: PicoAdapterGB_${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}${{ matrix.adapter == 'STACKSMASHING' && '_SmBoard' || '' }}.uf2
-        asset_content_type: application/octet-stream
+        files: ./firmwares/*.uf2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
