@@ -85,17 +85,21 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          for file in ./firmwares/*.uf2; do
+          shopt -s nullglob
+          files=(./firmwares/*.uf2)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No .uf2 files found to upload!"
+            exit 1
+          fi
+      
+          upload_url="${{ steps.create_release.outputs.upload_url }}"
+      
+          for file in "${files[@]}"; do
             filename=$(basename "$file")
             echo "Uploading $filename ..."
-            gh_release_upload() {
-              curl \
-                -H "Authorization: token $GITHUB_TOKEN" \
-                -H "Content-Type: application/octet-stream" \
-                --data-binary @"$1" \
-                "${2}?name=$(basename $1)"
-            }
-            # Usa a URL de upload da release criada
-            upload_url="${{ steps.create_release.outputs.upload_url }}"
-            gh_release_upload "$file" "$upload_url"
+            curl \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary @"$file" \
+              "${upload_url}?name=${filename}"
           done
