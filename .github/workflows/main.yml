@@ -43,9 +43,7 @@ jobs:
       run: |
         cd build/${{ matrix.adapter == 'STACKSMASHING' && 'release/SmBoard' || 'release/REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}
         cmake --build . --parallel
-        ls
-        cd ../../../..
-        ls
+        ls build
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
