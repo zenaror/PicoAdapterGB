@@ -1,14 +1,11 @@
-name: Build PicoW Firmware
+name: Build PicoW Firmware (Manual - Pre-Release)
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build:
+    if: github.ref == 'refs/heads/pre-release'
     runs-on: ubuntu-latest
 
     strategy:
@@ -27,7 +24,7 @@ jobs:
         sudo apt update
         sudo apt install -y cmake gcc-arm-none-eabi build-essential libnewlib-arm-none-eabi
 
-    - name: Clone Pico SDK
+    - name: Clone Pico SDK (v2.1.1)
       run: |
         git clone --depth 1 --branch 2.1.1 https://github.com/raspberrypi/pico-sdk.git
         cd pico-sdk
