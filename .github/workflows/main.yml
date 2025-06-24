@@ -50,5 +50,22 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: firmware-${{ matrix.adapter }}-${{ matrix.board }}
-        path: ./build/release/${{ matrix.adapter == 'STACKSMASHING' && 'SmBoard' || 'REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}/PicoAdapterGB_${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}${{ matrix.adapter == 'STACKSMASHING' && '_SmBoard' || '' }}.uf2
+        path: build/release/${{ matrix.adapter == 'STACKSMASHING' && 'SmBoard' || 'REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}/*.uf2
+    - name: Create GitHub Release (draft)
+      id: create_release
+      uses: actions/create-release@v1
+      with:
+        tag_name: pre-release-${{ github.run_number }}
+        release_name: Beta v#${{ github.run_number }}
+        draft: true
+        prerelease: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload firmware to release
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: build/release/${{ matrix.adapter == 'STACKSMASHING' && 'SmBoard' || 'REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}/*.uf2
+        asset_name: PicoAdapterGB_${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}${{ matrix.adapter == 'STACKSMASHING' && '_SmBoard' || '' }}.uf2
+        asset_content_type: application/octet-stream
 
