@@ -27,6 +27,12 @@ jobs:
         sudo apt update
         sudo apt install -y cmake gcc-arm-none-eabi build-essential libnewlib-arm-none-eabi
 
+    - name: Clone Pico SDK
+      run: |
+        git clone --depth 1 --branch 2.1.1 https://github.com/raspberrypi/pico-sdk.git
+        cd pico-sdk
+        git submodule update --init
+
     - name: Create build directory
       run: |
         mkdir -p build/${{ matrix.adapter == 'STACKSMASHING' && 'release/SmBoard' || 'release/REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}
@@ -37,7 +43,7 @@ jobs:
         cmake ../../../.. \
           -DADAPTER=${{ matrix.adapter }} \
           -DPICO_BOARD=${{ matrix.board }} \
-          -DPICO_SDK_FETCH_FROM_GIT=1 \
+          -DPICO_SDK_PATH=${{ github.workspace }}/pico-sdk \
           -DCMAKE_BUILD_TYPE=Release
 
     - name: Build firmware
@@ -49,4 +55,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: firmware-${{ matrix.adapter }}-${{ matrix.board }}
-        path: build/${{ matrix.adapter == 'STACKSMASHING' && 'release/SmBoard' || 'release/REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}/*.uf2
+        path: |
+          build/${{ matrix.adapter == 'STACKSMASHING' && 'release/SmBoard' || 'release/REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}/*.uf2
