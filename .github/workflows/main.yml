@@ -85,6 +85,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          find ./firmwares -type f
           shopt -s nullglob
           files=(./firmwares/*.uf2)
           if [ ${#files[@]} -eq 0 ]; then
