@@ -85,9 +85,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          find ./firmwares -type f
-          shopt -s nullglob
-          files=(./firmwares/*.uf2)
+          shopt -s globstar nullglob
+          files=(./firmwares/**/*.uf2)
           if [ ${#files[@]} -eq 0 ]; then
             echo "No .uf2 files found to upload!"
             exit 1
@@ -104,3 +103,4 @@ jobs:
               --data-binary @"$file" \
               "${upload_url}?name=${filename}"
           done
+
