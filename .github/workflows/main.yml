@@ -30,26 +30,19 @@ jobs:
         git submodule update --init
     - name: Create build directory
       run: |
-        mkdir -p build/${{ matrix.adapter == 'STACKSMASHING' && 'release/SmBoard' || 'release/REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}
+        mkdir -p build
     - name: Configure CMake
       run: |
-        cd build/${{ matrix.adapter == 'STACKSMASHING' && 'release/SmBoard' || 'release/REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}
-        cmake ../../../.. \
+        cd build
+        cmake .. \
           -DADAPTER=${{ matrix.adapter }} \
           -DPICO_BOARD=${{ matrix.board }} \
           -DPICO_SDK_PATH=${{ github.workspace }}/pico-sdk \
           -DCMAKE_BUILD_TYPE=Release
     - name: Build firmware
       run: |
-        cd build/${{ matrix.adapter == 'STACKSMASHING' && 'release/SmBoard' || 'release/REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}
+        cd build
         cmake --build . --parallel
-        ls
-        echo -----------------
-        ls release
-        echo -----------------
-        ls release/${{ matrix.adapter == 'STACKSMASHING' && 'SmBoard' || 'REON' }}
-        echo -----------------
-        ls release/${{ matrix.adapter == 'STACKSMASHING' && 'SmBoard' || 'REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}
     - name: List files after build
       run: |
         find ./build -type f
