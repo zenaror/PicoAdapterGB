@@ -43,10 +43,9 @@ jobs:
       run: |
         cd build/${{ matrix.adapter == 'STACKSMASHING' && 'release/SmBoard' || 'release/REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}
         cmake --build . --parallel
-        ls
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
         name: firmware-${{ matrix.adapter }}-${{ matrix.board }}
-        path: build/release/${{ matrix.adapter == 'STACKSMASHING' && 'SmBoard' || 'REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}/*.uf2
+        path: release/${{ matrix.adapter == 'STACKSMASHING' && 'SmBoard' || 'REON' }}/${{ matrix.board == 'pico_w' && 'PicoW' || 'Pico2W' }}/*.uf2
 
