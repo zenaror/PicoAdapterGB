@@ -56,7 +56,8 @@ err_t socket_connected_tcp(void *arg, struct tcp_pcb *pcb, err_t err) {
 void socket_err_tcp(void *arg, err_t err){
     struct mobile_user *mobile = (struct mobile_user*)arg;
     struct socket_impl *state = &mobile->socket[mobile->currentReqSocket];
-    printf("TCP Generic Error %d\n", err);
+    state->socket_status = err;
+    DEBUG_PRINT_FUNCTION("TCP Generic Error %d", err);
 }
 
 err_t socket_accept_tcp(void *arg, struct tcp_pcb *pcb, err_t err){
@@ -101,6 +102,7 @@ err_t socket_recv_tcp(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err_t err)
     struct mobile_user *mobile = (struct mobile_user*)arg;
     struct socket_impl *state = &mobile->socket[mobile->currentReqSocket];
     // printf("TCP Receiving...\n");
+    state->pending_close = true;
     if(p){
         if (p->tot_len > 0) {
             int copiedBytes = 0;
@@ -145,5 +147,6 @@ err_t socket_recv_tcp(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err_t err)
         }
         state->tcp_pcb = NULL;
     }
+    state->pending_close = false;
     return err;
 }
