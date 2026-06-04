@@ -2,7 +2,7 @@
 
 <a href="https://www.buymeacoffee.com/zenaro147" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
-**Pico W Setup BOM: (recommended) **
+**Pico W Setup BOM: **
 | Piece | Where to buy |
 |-|-|
 | Raspberry Pi Pico W | [AliExpress](https://www.aliexpress.com/item/1005005834048244.html) |
