@@ -9,7 +9,7 @@
 | Bidirectional Level Shifter | [AliExpress](https://www.aliexpress.com/item/1972791896.html) |
 | MSK-12C02 Switch (optional) | [AliExpress](https://www.aliexpress.com/item/4001202080623.html) |
 
-PS.: Just use the switch if you really really need it. The device should work fine without it.
+PS.: Just use the switch if you really really need it. This should feed the HV point in the Level Shifter with 5v or 3.3v directly from Pico. But the device should work fine without it.
 
 A simple PCB design using EasyEDA to work with this projects by me:
 * [PicoAdapterGB](https://github.com/zenaro147/PicoAdapterGB)
