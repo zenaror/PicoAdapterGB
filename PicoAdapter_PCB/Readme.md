@@ -7,15 +7,9 @@
 |-|-|
 | Raspberry Pi Pico W | [AliExpress](https://www.aliexpress.com/item/1005005834048244.html) |
 | Bidirectional Level Shifter | [AliExpress](https://www.aliexpress.com/item/1972791896.html) |
-| MSK-12C02 Switch | [AliExpress](https://www.aliexpress.com/item/4001202080623.html) |
+| MSK-12C02 Switch (optional) | [AliExpress](https://www.aliexpress.com/item/4001202080623.html) |
 
-**Pico + ESP Setup BOM:**
-| Piece | Where to buy |
-|-|-|
-| Raspberry Pi Pico | [AliExpress](https://www.aliexpress.com/item/1005005834048244.html) |
-| Bidirectional Level Shifter | [AliExpress](https://www.aliexpress.com/item/1972791896.html) |
-| ESP01 + Adapter | [AliExpress](https://www.aliexpress.com/item/1005002975811689.html) |
-| MSK-12C02 Switch | [AliExpress](https://www.aliexpress.com/item/4001202080623.html) |
+PS.: Just use the switch if you really really need it. The device should work fine without it.
 
 A simple PCB design using EasyEDA to work with this projects by me:
 * [PicoAdapterGB](https://github.com/zenaro147/PicoAdapterGB)
