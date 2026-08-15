@@ -336,6 +336,7 @@ jobs:
             gh release upload bleeding-edge release/*.uf2
             gh release edit bleeding-edge \
               --title "PicoAdapterGB Bleeding Edge" \
+              --draft=false \
               --prerelease \
               --notes "${release_notes}"
 
