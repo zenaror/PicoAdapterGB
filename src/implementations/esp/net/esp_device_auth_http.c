@@ -4,10 +4,10 @@
 // device-auth side channel (see core/adapter_bridge.c) - never seen by
 // libmobile, and never sharing a link with mobile->socket[]
 // (ESP_LINK_MOBILE_BASE..+1, see socket_impl.c): this claims its own link ID
-// via ESP_LINK_OWNER_DEVICE_AUTH, the same owner esp_device_auth_dns.c
-// already uses (they never run concurrently - see net_hal.h - so reusing the
-// owner slot, not the link ID itself, is enough to keep both out of the
-// mobile/web links' way).
+// via ESP_LINK_OWNER_DEVICE_AUTH, which keeps it out of the mobile/web links'
+// way. The server's address is not resolved here: libmobile resolves it and
+// hands the IP to the callback (see net_hal.h), so this only ever opens a
+// plain TCP connection to an already-known IP.
 #include "net/net_hal.h"
 
 #include <string.h>
