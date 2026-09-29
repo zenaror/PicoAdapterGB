@@ -4,9 +4,9 @@
 // device-auth side channel (see core/adapter_bridge.c) - never seen by
 // libmobile, and never sharing lwIP state with socket_impl.c's sockets: this
 // owns its own dedicated tcp_pcb, so it can never contend with or corrupt a
-// real Mobile Adapter connection. May run sequentially after
-// picow_device_auth_dns.c's resolver (never concurrently with it - see
-// net_hal.h), but is otherwise fully independent of it.
+// real Mobile Adapter connection. The server's address is not resolved here:
+// libmobile resolves it and hands the IP to the callback (see net_hal.h), so
+// this only ever opens a plain TCP connection to an already-known IP.
 #include "net/net_hal.h"
 
 #include <string.h>

@@ -54,8 +54,9 @@ void net_service_pending_socket_closes(struct mobile_user *mobile);
 // step of our own. `request_line` is the full first line already built by
 // the caller (e.g.
 // "GET /api/...&sig=... HTTP/1.0"), sent together with a Host header built
-// from `ip` and `Connection: close`, then the response is read only far
-// enough to parse the status line - the body (if any) is discarded.
+// from `ip` and `Connection: close`. The status line is parsed for
+// net_device_auth_http_get_result() and the body is kept for
+// net_device_auth_http_get_body().
 // Starting a new request abandons one already in flight.
 void net_device_auth_http_get_start(const unsigned char ip[4], uint16_t port, const char *request_line);
 // True once the request started by net_device_auth_http_get_start() has
@@ -68,7 +69,9 @@ int net_device_auth_http_get_result(void);
 // Valid only once net_device_auth_http_get_done() is true. Returns the
 // response body exactly as received, with *len set to its length; the
 // pointer stays valid until the next net_device_auth_http_get_start().
-// Used by the device-auth counter query, whose answer is "<counter> <sig>".
+// Used by the device-auth counter query, whose answer takes one of the three
+// forms libmobile accepts ("<counter> <sig>", "<counter> <echo> <sig>" or
+// "blocked <echo> <sig>" - see mobile_device_auth_query_result() in mobile.h).
 // Hand it to libmobile untouched: it verifies the signature and parses
 // strictly itself, so a backend must not validate, trim or reinterpret it.
 // The body is captured up to a fixed ceiling sized for that answer, so a
