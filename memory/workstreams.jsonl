@@ -1,0 +1,6 @@
+{"created_at": "2026-10-01T11:40:10+00:00", "created_by": "codex-migration", "id": "pico-main", "status": "active", "title": "PicoAdapterGB — main implementation and EEPROM/configuration"}
+{"created_at": "2026-10-01T11:40:10+00:00", "created_by": "codex-migration", "id": "full-server-support", "status": "active", "title": "PicoAdapterGB — Full Server Support"}
+{"created_at": "2026-10-01T11:40:11+00:00", "created_by": "codex-migration", "id": "pico-esp", "status": "active", "title": "PicoAdapterGB — Pico + ESP implementation"}
+{"created_at": "2026-10-01T11:40:11+00:00", "created_by": "codex-migration", "id": "pico-w-pico2-w", "status": "active", "title": "PicoAdapterGB — Pico W + Pico 2 W implementation"}
+{"created_at": "2026-10-01T11:40:11+00:00", "created_by": "codex-migration", "id": "web-server-debug", "status": "active", "title": "PicoAdapterGB — Web server debug/troubleshooting"}
+{"created_at": "2026-10-01T11:40:48+00:00", "created_by": "codex-migration", "id": "copilot-history", "status": "archived", "title": "PicoAdapterGB — GitHub Copilot history import"}
