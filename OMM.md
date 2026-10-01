@@ -11,6 +11,12 @@ Use uma memória compartilhada para todo o PicoAdapterGB, mesmo quando o trabalh
 - `web-server-debug` — diagnóstico do servidor web.
 - `copilot-history` — histórico Copilot importado, mantido como frente arquivada.
 
+## Uma conversa central e ajudantes por implementação
+
+O humano conversa com um chat central. Ele identifica a placa e a implementação envolvidas e chama apenas os subagentes necessários: firmware principal, Pico + ESP8266, Pico W/Pico 2 W, suporte ao servidor completo ou servidor web. O planejador pode ser chamado quando a tarefa tiver muitas etapas ou cruzar implementações.
+
+Os especialistas trabalham na mesma tarefa e compartilham o escopo `picoadaptergb`; cada investigação continua separada pelo workstream. O chat central leva perguntas e resultados entre eles, revisa o conjunto e responde ao humano. O perfil e os papéis estão em `memory/agent-topology.json` e `memory/roles/` do repositório central da OMM.
+
 ## Uso rápido
 
 ```sh
