@@ -62,5 +62,5 @@ docker-build.sh
 *.uf2
 chat.json
 
-# OMM local search cache; canonical memory is in memory/
+# OMM local search cache; OMM data is never committed here (it lives only in the OMM backup)
 .omm/
