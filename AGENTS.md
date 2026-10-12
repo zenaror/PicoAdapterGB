@@ -35,6 +35,7 @@ As regras completas, em inglês, estão na OMM em `sources/picoadaptergb/project
 
 - O repositório é público no GitHub. README, documentação, página web e mensagens seriais e do CMake ficam em inglês. Este arquivo está em português por pedido do Rafael.
 - Não faça commit nem push sem ordem explícita do Rafael. Quando ele autorizar, faça um commit por rodada de trabalho concluída. Reescrever histórico ou forçar push exige a confirmação direta dele na própria sessão.
+- Não insira automaticamente trailers `Co-authored-by` de Claude/Anthropic nos commits. Preserve a autoria e os créditos de coautores humanos e as contribuições upstream legítimas; o uso de IA é declarado na nota do README.
 - Não grave memórias, fontes nem configurações da OMM neste repositório; esses dados ficam só no backup da OMM. Não copie senhas, tokens nem chaves para código, logs, commits ou memórias.
 
 ## Ao terminar

@@ -62,6 +62,12 @@ Practical consequences for anyone redistributing a built `.uf2`:
 libmobile's author also grants Nintendo and its subsidiaries use under the zero-clause BSD
 license; that exemption is theirs to give and applies to libmobile only, not to this project.
 
+## AI assistance
+
+Parts of our modifications to PicoAdapterGB were developed with assistance
+from AI tools, including code generation. This statement does not describe
+the development of upstream contributions or the separate libmobile project.
+
 ## Credits 
 * [REON Team](https://github.com/REONTeam/) - Mobile Adapter Library (libmobile, LGPLv3)
 * [mid-kid](https://github.com/mid-kid/) - Help to structure the 32bits solution
