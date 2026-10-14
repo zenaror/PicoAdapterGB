@@ -16,7 +16,23 @@ Last Update [![Release Date](https://img.shields.io/github/release-date-pre/zena
 If you still have questions, ask us here or in the **REON Team Discord** [![Discord Group](https://img.shields.io/badge/chat-on%20Discord-738ADB)](https://discord.gg/mKT4pTfUqC)
 
 ## How to build
-Refer to the [Wiki page](https://github.com/zenaror/PicoAdapterGB/tree/main/doc/wiki) for more details on how to build one according to your setup.
+For firmware compilation, start with [Building PicoAdapterGB](doc/BUILDING.md).
+For board assembly and flashing, see the [hardware guides](doc/wiki); for the
+current web setup, see [Configuration](doc/CONFIGURATION.md). Older wiki pages
+may describe the serial setup used by earlier firmware.
+
+## Project guide
+
+- [Documentation index](doc/README.md): architecture, build options, configuration,
+  validation tools and development continuity.
+- `src/`: firmware core and the `picow`/`esp` backends.
+- `PicoAdapter_PCB/`: board and schematic files.
+- `CMakeLists.txt`, `Makefile` and `.github/workflows/`: build tools and CI.
+- [AGENTS.md](AGENTS.md): contributor-agent entry point.
+
+The eight board/backend/pinout combinations are described in the build guide.
+A successful build or CI job establishes compilation and artifact generation;
+it does not establish link-cable, network or persistence behavior on hardware.
 
 ## Demo
 [![Click on the image to see the full video](https://github.com/zenaror/PicoAdapterGB/blob/main/doc/demoPreview.gif)](https://youtu.be/YvNsaXxCjOU)<br> 

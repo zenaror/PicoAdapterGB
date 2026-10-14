@@ -15,9 +15,11 @@ This project combines:
 - `src/` — core firmware: Game Boy link cable (PIO), libmobile glue, storage, and the network/LED interfaces every board target implements
 - `src/implementations/picow/` — Pico W / Pico 2 W backend (cyw43 + lwIP), including the optional web setup UI
 - `src/implementations/esp/` — Pico / Pico 2 + ESP8266EX (ESP-01, ESP-AT) backend, including the optional web setup UI (see its own [README.md](../src/implementations/esp/README.md))
-- `dependences/libmobile/` — local copy of the libmobile protocol implementation
+- `dependences/libmobile/` — separate protocol repository, pinned as a Git submodule; its source and license remain independently maintained
 - `doc/` — project documentation
 - `PicoAdapter_PCB/` — board and schematic files
+- `CMakeLists.txt`, `Makefile` — build configuration and convenience commands at the repository root
+- `.github/workflows/` — CI build and release automation
 
 See [doc/ARCHITECTURE.md](ARCHITECTURE.md) for the detailed module breakdown (network abstraction, adapter glue code, web server, storage) and how they depend on each other.
 
@@ -62,3 +64,36 @@ See [doc/CONFIGURATION.md](CONFIGURATION.md) for the current web configuration f
 ## Legacy / fallback notes
 
 Older documentation in the wiki described a serial-based setup flow. The current firmware is primarily configured through the built-in web interface. The serial menu remains a useful fallback for troubleshooting, but the recommended path is the web setup UI.
+
+## Validation and tools
+
+[BUILDING.md](BUILDING.md) lists dependencies, the three independent build
+choices and output paths. The root [Makefile](../Makefile) wraps CMake:
+`make help` lists variants; `make all-variants` builds the eight Release
+combinations by default. Select a single variant when that is the intended
+validation scope and record its board, backend, pinout, SDK/toolchain and
+firmware/submodule revisions.
+
+The existing [bleeding-edge workflow](../.github/workflows/bleeding-edge.yml)
+builds all eight combinations, checks that their UF2 outputs exist and has a
+release publication job. It runs on pushes to `develop` or manual dispatch;
+its checkout explicitly selects `develop`. Do not dispatch it as a check of
+an unrelated branch or treat compilation as hardware validation. Firmware
+changes involving I/O need observations on the affected hardware, including
+link-cable transfer modes, networking and configuration persistence as relevant.
+
+For build cleanup, inspect the root [Makefile](../Makefile) first.
+`make -n clean` shows the existing cleanup command without executing it:
+`make clean` removes all of `build/`, regardless of the selected `BUILD_DIR`.
+It does not remove `build-debug/` or `build-release/`. Classify and retain
+required outputs before cleanup; ignored files are not inherently disposable.
+
+## Planning and continuity
+
+The project uses the OMM `picoadaptergb` scope for its current plan, pending
+work, decisions and version-guarded handoff. [AGENTS.md](../AGENTS.md) is the
+entry point for that workflow. Keep the technical contracts needed to build,
+configure and review the firmware in this documentation; do not duplicate
+private session records or OMM data in the repository. The libmobile submodule
+has its own repository and development discussion; firmware maintenance does
+not authorize changes to it.
