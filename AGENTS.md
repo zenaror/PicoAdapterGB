@@ -20,7 +20,7 @@ As regras completas, em inglês, estão na OMM em `sources/picoadaptergb/project
 - `src/core/adapter_bridge.c` é a fronteira com a libmobile. Antes de mexer num callback, leia a documentação dele em `dependences/libmobile/mobile.h`.
 - `src/pio/` e o caminho de interrupção do cabo de link são sensíveis a tempo: nada de espera, rede, DNS, flash, alocação ou log pesado ali. Confira os modos de 8 e de 32 bits.
 - Rede: respeite quem é dono de cada objeto do lwIP, não chame o lwIP de dentro de interrupção e não bloqueie o laço principal. O núcleo (`src/` fora de `src/implementations/`) não pode depender de cyw43, lwIP nem ESP.
-- Flash: a configuração é gravada depois, pelo mecanismo de gravação pendente. Não grave a flash de dentro de interrupção, de callback sensível a tempo nem de rota web.
+- Flash: a configuração é gravada depois, pelo mecanismo de gravação pendente. Não grave a flash de dentro de interrupção, de callback sensível a tempo nem de rota web. A exceção autorizada é `/api/format`, acionada pelo botão **Format EEPROM** da interface web: essa ação explícita grava o snapshot diretamente e vale para as duas implementações.
 - O submódulo `dependences/libmobile` é outro repositório. Não o altere por conveniência nem o atualize de carona. Antes de mover o ponteiro, confirme que o commit existe na origem pública.
 - Investigue antes de mudar, faça a menor mudança justificada e não misture limpezas sem relação.
 - Separe o que foi confirmado no código, na documentação, no build e no hardware. Build aprovado não prova que funciona na placa.
@@ -43,6 +43,13 @@ As regras completas, em inglês, estão na OMM em `sources/picoadaptergb/project
 - Não faça commit nem push sem ordem explícita do Rafael. Quando ele autorizar, faça um commit por rodada de trabalho concluída. Reescrever histórico ou forçar push exige a confirmação direta dele na própria sessão.
 - Não insira automaticamente trailers `Co-authored-by` de Claude/Anthropic nos commits. Preserve a autoria e os créditos de coautores humanos e as contribuições upstream legítimas; o uso de IA é declarado na nota do README.
 - Não grave memórias, fontes nem configurações da OMM neste repositório; esses dados ficam só no backup da OMM. Não copie senhas, tokens nem chaves para código, logs, commits ou memórias.
+
+## Cleanup e retenção
+
+- CMake/Ninja e o Makefile geram caches, objetos, logs e firmware em diretórios de build. Ao fechar tarefa, checkpoint ou pausa, classifique apenas os artefatos da própria tarefa: saídas reproduzíveis podem ser removidas depois de guardar comandos, versões, placa, implementação, pinagem, hashes e resultados necessários à conferência. Falhas não explicadas ficam retidas até resolução.
+- Preserve originais, saves, `mobile_config.bin`, fixtures, evidências de console/hardware, releases aceitas e backups/mapas de recuperação Git em armazenamento durável. `/tmp` não serve como referência permanente. Arquivos ignorados, Docker e `chat.json` não são descartáveis por estarem fora do Git; origem incerta vira pendência.
+- O `make clean` atual remove todo `build/`, não apenas uma variante nem o `BUILD_DIR` escolhido; `make -n clean` mostra esse alcance. Não o execute sem classificar e preservar o conteúdo de todas as variantes afetadas. Para uma tarefa isolada, prefira caminhos explícitos de sua propriedade, conferindo destinos e links simbólicos; não use `git clean -xfd`, globs amplos ou exclusão por idade.
+- Não remova saídas de processos ativos ou de outras sessões. Releases e evidências ficam até decisão explícita; backups/mapas Git ficam enquanto necessários à recuperação de clones antigos. Registre no handoff remoções, retenção, localização e pendências; não faça testes novos só para cleanup.
 
 ## Ao terminar
 

@@ -44,11 +44,25 @@ It also shows, read-only, the relay phone number the adapter was assigned by the
 
 The page is designed to be used from a laptop, phone, or tablet connected to the adapter's Wi-Fi network.
 
+It also shows the board's pairing code, read-only. This identifies the board
+in your account's device list; copying a configuration file to another board
+does not copy its identity.
+
+If the board has a pairing code but no mail authentication key, the page
+shows a warning. Download a new `mobile_config.bin` from your account, upload
+it with "Overwrite custom server config too? (like DNS and Relay Server)"
+checked, then press `Save & Reboot` to provision the key.
+
 ## Web shutdown behavior
 
-The configuration server is intentionally stopped as soon as the Game Boy starts communication. This prevents the setup page from staying active while the adapter is being used in normal operation.
+The configuration server is intentionally stopped when the Game Boy starts
+a session. This prevents the setup page from staying active during normal
+adapter operation.
 
-The main firmware loop stops the web server after libmobile has processed the valid Start Session command. This keeps the web server from racing the first Game Boy protocol exchange.
+The main firmware loop stops the web server about one second after libmobile
+has processed the valid Start Session command. This lets the initial protocol
+exchange finish before closing the HTTP connections. The web server stays
+off until reboot.
 
 ## Save and reboot
 
@@ -56,14 +70,27 @@ The configuration form includes a single action called `Save & Reboot`.
 
 When you save the configuration, the firmware persists the settings and reboots to apply them.
 
+The form and file uploads edit a configuration snapshot, separate from the
+running adapter. `Save & Reboot` queues persistence for the firmware loop;
+the adapter loads the new settings after reboot.
+
+## Format EEPROM
+
+The `Format EEPROM` button asks for confirmation and resets the configuration
+snapshot, including Wi-Fi and custom server settings. This explicit action
+writes the reset snapshot to flash immediately in both implementations. It
+is the authorized exception to deferred web configuration writes. The
+running adapter loads the reset configuration on its next boot; formatting
+does not reboot it automatically.
+
 ## EEPROM backup and restore
 
-The web page also lets you download and upload the raw 512-byte Mobile Adapter GB EEPROM image (`eeprom.bin`):
+The web page also lets you download and upload the raw 512-byte Mobile Adapter GB EEPROM image (`mobile_config.bin`):
 
-- `Download eeprom.bin` always saves the full 512 bytes currently in memory.
-- `Upload eeprom.bin` only accepts a file that is exactly 512 bytes and starts with the `MA` signature (the original adapter's config block); otherwise it's rejected.
+- `Download mobile_config.bin` saves the full 512 bytes from the configuration snapshot.
+- `Upload mobile_config.bin` only accepts a file that is exactly 512 bytes and starts with the `MA` signature (the original adapter's config block); otherwise it's rejected.
 - By default, uploading only restores that original adapter config block (offsets `0x00`-`0xBF`), leaving the current Wi-Fi/DNS/relay settings untouched.
-- Checking "Overwrite libmobile config too" also restores the DNS/relay/device/etc. block (offsets `0x100`-`0x15F`), which must additionally start with the `LM` signature. The page updates those fields immediately, decoded from the uploaded file in the browser.
+- Checking "Overwrite custom server config too? (like DNS and Relay Server)" restores the full image and applies the DNS/relay/device/etc. block (offsets `0x100`-`0x15F`), which must start with the `LM` signature. It also applies the mail authentication key when the device-auth block has a valid `DA` header at offset `0x160`. The page updates the server settings immediately, decoded from the uploaded file in the browser.
 - An upload only changes what's held in memory. Nothing is written to flash until you press `Save & Reboot`.
 
 ## LED status

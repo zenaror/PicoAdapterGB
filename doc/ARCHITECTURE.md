@@ -137,7 +137,7 @@ graph TD
 
 ## Known coupling / limitation
 
-`implementations/picow/net/picow_socket.c`'s lwIP callbacks (`socket_recv_tcp`, `socket_sent_tcp`, etc.) locate the connection's state via `mobile->currentReqSocket` (the index of whichever connection `core/adapter_bridge.c` last touched) rather than the callback's own lwIP `arg` parameter. This is pre-existing, working behavior specific to the picow backend, not part of the `net_hal.h`/`socket_hal.h` contract - a different backend is free to use its own connection-lookup strategy.
+`implementations/picow/net/picow_socket.c`'s lwIP callbacks locate their own `struct socket_impl` through the callback's `arg` parameter. `socket_impl_open()` registers that state with `tcp_arg()` or `udp_recv()`, and the accept callback carries it onto the accepted TCP connection. Callback ownership is specific to the picow backend, outside the `net_hal.h`/`socket_hal.h` contract.
 
 `implementations/esp/` shares a single ESP-AT `AT+CIPSERVER` slot (the ESP8266 only supports one at a time) between the web setup UI and libmobile's own TCP listen/accept (P2P). This works because the existing boot sequence already tears the web server down shortly after a Game Boy session starts, before libmobile would ever call `socket_impl_listen()` - see `src/implementations/esp/README.md` for the full reasoning and its limits.
 

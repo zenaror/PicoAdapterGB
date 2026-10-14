@@ -236,7 +236,7 @@ assumed correct:
 | Network stack | lwIP (in-Pico) | ESP-AT (on the ESP8266; Pico only speaks AT) |
 | Socket callbacks | lwIP callbacks (event-driven) | Polled async state machine (no callback mechanism exists over a UART/AT link) |
 | `net_wifi_connect()`/`sock_connect()`/`sock_recv()` blocking behavior | `net_wifi_connect()` blocks, connect/recv are non-blocking | Same shape, implemented against `net/esp_at.h` instead of `cyw43_arch_poll()` |
-| `sock_send()` blocking behavior | Non-blocking (matches `mobile.h`'s documented contract) | Bounded-blocking (up to `ESP_AT_TIMEOUT_SEND_MS`) - deliberate workaround for a libmobile submodule bug, see "Known limitations" above |
+| `sock_send()` blocking behavior | Non-blocking (matches `mobile.h`'s documented contract) | Non-blocking; returns 0 while `AT+CIPSEND` is in progress or the AT bus is busy, and the caller retries on a later poll |
 | LED | `cyw43_arch_gpio_put()` (LED is on the CYW43 radio) | Plain `gpio_put(PICO_DEFAULT_LED_PIN)` |
 | Web server transport | lwIP TCP callbacks | Polled against the shared `AT+CIPSERVER` slot (see above) |
 | Web server routes/HTML | `web/web_routes_*.c`, `web/web_page.c` | Byte-for-byte copies of picow's (verified to have zero lwIP dependency) - not shared, to keep the two implementations independent (see doc/ARCHITECTURE.md) |

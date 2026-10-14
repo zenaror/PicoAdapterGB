@@ -35,8 +35,11 @@ cmake -S . -B build \
 
 (`PICOADAPTER_IMPLEMENTATION` defaults to `picow`, so it doesn't need to be passed explicitly today.)
 
-The firmware version shown in boot logs and the web interface defaults to
-`1.5.6-beta`. It can be overridden at configure time:
+On a fresh CMake configuration, the firmware version shown in boot logs and
+the web interface defaults to `Debug` for `CMAKE_BUILD_TYPE=Debug`, and to
+`NoVersion` for every other build type, including an unspecified type.
+`PICO_ADAPTER_SOFTWARE` is cached, so reconfiguring an existing build directory
+keeps its previous value unless you override it explicitly:
 
 ```bash
 cmake -S . -B build \
