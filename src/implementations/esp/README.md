@@ -8,7 +8,7 @@ module - specifically an **ESP-01** breakout - running Espressif's official
 
 This is the second implementation of the interfaces `picow`
 (`src/implementations/picow/`) already implements for Pico W / Pico 2 W's
-onboard CYW43. See [doc/ARCHITECTURE.md](../../doc/ARCHITECTURE.md) for how
+onboard CYW43. See [doc/ARCHITECTURE.md](../../../doc/ARCHITECTURE.md) for how
 the two fit into the overall core/implementation split.
 
 ## Hardware
@@ -49,9 +49,8 @@ exactly as it does on `picow`.
 
 ## ESP-AT firmware
 
-This backend does **not** flash or manage the ESP8266's firmware (see
-`PicoAdapterGB-Claude.md`'s task instructions - out of scope by design). The
-module must already be running:
+This backend does **not** flash or manage the ESP8266's firmware. The module
+must already be running:
 
 ```text
 ESP-AT v2.3.0.0 for ESP8266
@@ -116,8 +115,7 @@ file header comment for the implementation-level detail):
   before the payload starts. Active `+IPD` pushes mix arbitrary binary
   payload into the same asynchronous stream as `\r\n`-terminated protocol
   lines, which is fundamentally harder to parse correctly when the payload
-  itself can contain `\r`, `\n`, or text that looks like AT syntax (see
-  `PicoAdapterGB-Claude.md`'s ESP-AT task spec, section 10/22).
+  itself can contain `\r`, `\n`, or text that looks like AT syntax.
 - **Pull, don't push.** `net_poll()`/`mobile_loop()` control exactly when a
   chunk is read (up to `MOBILE_MAX_TRANSFER_SIZE` = 254 bytes at a time, see
   `socket_impl_recv()`), instead of the module deciding when to hand us
@@ -251,10 +249,10 @@ cmake -S . -B build -DPICO_BOARD=pico2 -DPICOADAPTER_IMPLEMENTATION=esp -DADAPTE
 cmake -S . -B build -DPICO_BOARD=pico2 -DPICOADAPTER_IMPLEMENTATION=esp -DADAPTER=STACKSMASHING
 ```
 
-All four build and link successfully (build-verified as part of adding this
-implementation), producing `PicoAdapterGB_PicoESP_REON`,
-`PicoAdapterGB_PicoESP_SmBoard`, `PicoAdapterGB_Pico2ESP_REON`, and
-`PicoAdapterGB_Pico2ESP_SmBoard` respectively - see
-[doc/BUILDING.md](../../doc/BUILDING.md). Verified (`arm-none-eabi-nm` on the
-resulting `.elf`) not to link any `cyw43`/`lwip` symbol. No hardware
-validation has been performed - see "Known limitations" above.
+The four build targets are `PicoAdapterGB_PicoESP_REON`,
+`PicoAdapterGB_PicoESP_SmBoard`, `PicoAdapterGB_Pico2ESP_REON` and
+`PicoAdapterGB_Pico2ESP_SmBoard` respectively; see
+[doc/BUILDING.md](../../../doc/BUILDING.md). To inspect backend isolation,
+check the resulting ELF's symbols with `arm-none-eabi-nm`: an ESP build
+should not link `cyw43` or `lwip` symbols. Compilation and symbol inspection
+do not validate behavior on hardware; see "Known limitations" above.

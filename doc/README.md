@@ -88,12 +88,11 @@ For build cleanup, inspect the root [Makefile](../Makefile) first.
 It does not remove `build-debug/` or `build-release/`. Classify and retain
 required outputs before cleanup; ignored files are not inherently disposable.
 
-## Planning and continuity
+## Contributing
 
-The project uses the OMM `picoadaptergb` scope for its current plan, pending
-work, decisions and version-guarded handoff. [AGENTS.md](../AGENTS.md) is the
-entry point for that workflow. Keep the technical contracts needed to build,
-configure and review the firmware in this documentation; do not duplicate
-private session records or OMM data in the repository. The libmobile submodule
-has its own repository and development discussion; firmware maintenance does
-not authorize changes to it.
+Start with [AGENTS.md](../AGENTS.md) for contribution rules. Keep the technical
+contracts needed to build, configure and review the firmware in this
+documentation. The libmobile submodule is a separate repository with its own
+API and license; firmware maintenance does not authorize incidental changes
+to it. Document affected boards and pinouts and distinguish build results
+from observations on real hardware.
